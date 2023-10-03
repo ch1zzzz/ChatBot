@@ -17,7 +17,7 @@ load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
 # Load CSV file
-loader = CSVLoader("sdejobs.csv", encoding="cp1252")
+loader = CSVLoader("data/nursejobs.csv", encoding="cp1252")
 documents = loader.load()
 
 # split documents to chunks
@@ -31,4 +31,4 @@ db = FAISS.from_documents(documents=texts,
                           )
 
 # save the embeddings and reload it
-db.save_local("faiss_index_sdejobs")
+db.save_local("faiss_index_nursejobs")

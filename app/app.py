@@ -6,10 +6,12 @@
 from flask import Flask, request, jsonify, render_template
 import os
 import openai
+import time
+from threading import Timer
 from dotenv import load_dotenv
-from qa import getqa, get_session_id
+from app.question_answer_chain import getqa, get_session_id
 
-# OPENAI API KEY
+# Load OPENAI API Key
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
@@ -17,6 +19,7 @@ app = Flask(__name__, template_folder="templates")
 app.secret_key = os.getenv('SECRET_KEY')
 
 user_qa = {}
+user_expiry = {}
 
 
 @app.route('/')
@@ -30,7 +33,7 @@ def test():
 
 
 @app.route('/dialogflow/cx/receiveMessage', methods=['POST'])
-def cxReceiveMessage():
+def cx_receive_message():
     """
 
     Create a chain for each session and get answer from GPT
@@ -61,14 +64,11 @@ def cxReceiveMessage():
     if user_qa.get(session_id) is None:
         user_qa[session_id] = getqa()
 
+    # set the conversation expire time to 10 minutes
+    user_expiry[session_id] = time.time() + 600
+
     qa = user_qa[session_id]
-
-    print(user_qa.keys())
-
-    # Use this tag peoperty to choose the action
-    # tag = data['fulfillmentInfo']['tag']
     query_text = data['text']
-
     result = qa.run({"question": query_text})
     print(f"Chatbot: {result}")
 

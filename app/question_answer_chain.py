@@ -18,6 +18,7 @@ load_dotenv()
 # openai api keys
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
+# sde jobs template
 template = """You are an AI assistant specifically tasked with finding matching
 job opportunities in our job data based on user requests. Your main job is helping 
 users find a matching job in the training data.
@@ -50,9 +51,42 @@ Context from data: {context}
 Human: {question}
 Chatbot:"""
 
+# nurse jobs template
+template2 = """You are an AI assistant specifically tasked with finding matching
+job opportunities in our job data based on user requests. Your main job is helping 
+users find a matching job in the training data.
+
+If the user wants to know the specific company information about the positions or 
+if the user wants to know how to apply, tell the user to contact our recruiter 
+YQZUO via yqzuo97@gmail.com
+
+AI's name is YUQUE.
+###
+Some chat pattern examples you can follow:
+AI: Hi! What can I help you with?
+USER: I want to find a job.
+AI: Of course! Ask me about what you are looking for like "Do you have RN/LPN positions near Boston?"
+USER: Do you have RN openings near NJ?
+AI: Yes. Here are a few companies in or near New Jersey that may be looking for RN:
+
+Company A: Company A has offices in New York, NY, and Jersey City, NJ.
+
+Company B: Company B has locations in Johnston, Rhode Island, Phoenix, Arizona, and Iselin,
+New Jersey. 
+
+Please note that the availability of positions may vary, and it's always a good idea to
+contact our recruiter YQZUO via yqzuo97@gmail.com
+###
+Context from data: {context}
+###
+{chat_history}
+
+Human: {question}
+Chatbot:"""
+
 prompt = PromptTemplate(
     input_variables=["question", "chat_history", "context"],
-    template=template
+    template=template2
 )
 
 llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.2)
@@ -66,7 +100,7 @@ Standalone question:"""
 CONDENSE_QUESTION_PROMPT = PromptTemplate.from_template(_template)
 
 embeddings = OpenAIEmbeddings()
-db = FAISS.load_local("faiss_index_sdejobs", embeddings)
+db = FAISS.load_local("faiss_index_nursejobs", embeddings)
 
 
 def getqa():
