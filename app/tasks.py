@@ -1,9 +1,17 @@
+# @author     : Jackson Zuo
+# @time       : 10/5/2023
+# @description: tasks to do by scheduler
+
 import time
 from app.app import user_qa, user_expiry
 
 
 # delete expired conversation
 def delete_expired_sessions():
+    """
+    Delete chain if it is expired
+
+    """
     current_time = time.time()
     sessions_to_delete = []
 

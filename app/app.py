@@ -1,24 +1,30 @@
-# File Name: app.py
-# Author: Jackson Zuo
-# Date Created: 2023-09-28
-# Description: This module contains REST API of the app.
+# @author     : Jackson Zuo
+# @time       : 10/5/2023
+# @description: This module contains REST API of the app.
 
 from flask import Flask, request, jsonify, render_template
 import os
 import openai
 import time
-from threading import Timer
 from dotenv import load_dotenv
+from werkzeug.utils import secure_filename
+
+from app.embeddings import embedding
+from app.helper import allowed_file
 from app.question_answer_chain import getqa, get_session_id
+from config import Config
 
 # Load OPENAI API Key
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
+# set app secret key
 app = Flask(__name__, template_folder="templates")
 app.secret_key = os.getenv('SECRET_KEY')
 
+# store qa chain for each user: {session_id:ConversationalRetrievalChain}
 user_qa = {}
+# store expiration for each chain: {session_id:expiration}
 user_expiry = {}
 
 
@@ -32,11 +38,42 @@ def test():
     return render_template('index.html')
 
 
+@app.route('/upload')
+def upload():
+    return render_template('upload.html')
+
+
+@app.route('/uploadFile', methods=['POST'])
+def upload_file():
+    """
+    upload positions files
+
+    Returns: success page
+
+    """
+    if 'file' not in request.files:
+        return 'No file part'
+
+    file = request.files['file']
+
+    if file.filename == '':
+        return 'No selected file'
+
+    if file and allowed_file(file.filename):  # check file suffix
+        filename = secure_filename('nursejobs.csv')
+        path = os.path.join(Config.UPLOAD_FOLDER, filename)
+        file.save(path)
+        embedding()  # calculate the embeddings from new data
+        return 'File successfully uploaded'
+
+    return render_template('upload.html')
+
+
 @app.route('/dialogflow/cx/receiveMessage', methods=['POST'])
 def cx_receive_message():
     """
-
     Create a chain for each session and get answer from GPT
+
     Returns: Json to DialogFlow
 
     """

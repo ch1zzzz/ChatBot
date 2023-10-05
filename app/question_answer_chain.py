@@ -1,12 +1,11 @@
-# File Name: app.py
-# Author: Jackson Zuo
-# Date Created: 2023-09-28
-# Description: Create ConversationalRetrievalChain according to the prompt.
+# @author     : Jackson Zuo
+# @time       : 10/5/2023
+# @description: Create ConversationalRetrievalChain according to the prompt.
 
 import os
 import openai
 from dotenv import load_dotenv
-from langchain import PromptTemplate
+from langchain.prompts import PromptTemplate
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings import OpenAIEmbeddings
@@ -91,7 +90,8 @@ prompt = PromptTemplate(
 
 llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.2)
 
-_template = """Given the following conversation and a follow up input, keep the follow up input as the standalone question.
+_template = """Given the following conversation and a follow up input, use the follow up input as the standalone question.
+Don't change any character.
 
 Chat History:
 {chat_history}
@@ -104,6 +104,11 @@ db = FAISS.load_local("faiss_index_nursejobs", embeddings)
 
 
 def getqa():
+    """
+
+    Returns: ConversationalRetrievalChain
+
+    """
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
     qa = ConversationalRetrievalChain.from_llm(
         llm=llm,
@@ -117,6 +122,15 @@ def getqa():
 
 
 def get_session_id(data):
+    """
+    Extract the session ID from a JSON data object.
+
+    Args:
+        data: JSON
+
+    Returns: str: The session ID
+
+    """
     session_info = data.get('sessionInfo', {})
     session_string = session_info.get('session', '')
 
