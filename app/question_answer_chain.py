@@ -5,11 +5,12 @@
 import os
 import openai
 from dotenv import load_dotenv
+from langchain.llms import OpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings import OpenAIEmbeddings
-from langchain.memory import ConversationBufferMemory
+from langchain.memory import ConversationBufferMemory, ConversationSummaryMemory
 from langchain.vectorstores import FAISS
 
 load_dotenv()
@@ -53,13 +54,12 @@ Chatbot:"""
 # nurse jobs template
 template2 = """You are an AI assistant specifically tasked with finding matching
 job opportunities in our job data based on user requests. Your main job is helping 
-users find a matching job in the training data.
+users find a matching job in the training data. Please provide a concise answer.
 
 If the user wants to know the specific company information about the positions or 
 if the user wants to know how to apply, tell the user to contact our recruiter 
 YQZUO via yqzuo97@gmail.com
 
-AI's name is YUQUE.
 ###
 Some chat pattern examples you can follow:
 AI: Hi! What can I help you with?
@@ -83,21 +83,48 @@ Context from data: {context}
 Human: {question}
 Chatbot:"""
 
+template3 = """You are an AI assistant specifically tasked with finding matching
+job opportunities in our job data based on user requests. Your main job is helping 
+users find a matching job in the training data and tell user the job roles, 
+qualifications, benefits and so on. 
+
+###
+USER: Do you have RN openings near NJ?
+AI: Yes. Here are a few companies in or near New Jersey that looking for RN:
+Company A: [job description from data]
+Company B: ... 
+Please note that the availability of positions may vary, and it's always a good idea to
+contact our recruiter Jackson via yongqiang.zuo@xenonhealth.com
+
+###
+Context from data: {context}
+###
+{chat_history}
+
+Human: {question}
+Chatbot:"""
+
 prompt = PromptTemplate(
     input_variables=["question", "chat_history", "context"],
-    template=template2
+    template=template3
 )
 
 llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.2)
 
-_template = """Given the following conversation and a follow up input, use the follow up input as the standalone question.
-Don't change any character.
+# _template = """Given the following conversation and a follow up input, use the follow up input as the standalone question.
+# Don't change any character.
+#
+# Chat History:
+# {chat_history}
+# Follow Up Input: {question}
+# Standalone question:"""
 
-Chat History:
-{chat_history}
+_template1 = """use the follow up input as the output.Don't change any character.For example.
+input: I want to find a job as LPN
+Standalone question: I want to find a job as LPN
 Follow Up Input: {question}
 Standalone question:"""
-CONDENSE_QUESTION_PROMPT = PromptTemplate.from_template(_template)
+CONDENSE_QUESTION_PROMPT = PromptTemplate.from_template(_template1)
 
 embeddings = OpenAIEmbeddings()
 db = FAISS.load_local("faiss_index_nursejobs", embeddings)
@@ -109,7 +136,9 @@ def getqa():
     Returns: ConversationalRetrievalChain
 
     """
-    memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+    # memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+    memory = ConversationSummaryMemory(
+        llm=OpenAI(temperature=0), memory_key="chat_history", return_messages=True)
     qa = ConversationalRetrievalChain.from_llm(
         llm=llm,
         retriever=db.as_retriever(),

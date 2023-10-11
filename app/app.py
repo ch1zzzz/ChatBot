@@ -30,7 +30,7 @@ user_expiry = {}
 
 @app.route('/')
 def home():
-    return 'All is well...'
+    return render_template('test.html')
 
 
 @app.route('/test')
@@ -108,20 +108,25 @@ def cx_receive_message():
     query_text = data['text']
     result = qa.run({"question": query_text})
     print(f"Chatbot: {result}")
+    print("result finished!!!!!!!!")
 
-    return jsonify(
-        {
-            'fulfillment_response': {
-                'messages': [
-                    {
-                        'text': {
-                            'text': [result],
-                            'redactedText': [result]
-                        },
-                        'responseType': 'HANDLER_PROMPT',
-                        'source': 'VIRTUAL_AGENT'
-                    }
-                ]
-            }
-        }
-    )
+    # return jsonify(
+    #     {
+    #         'fulfillment_response': {
+    #             'messages': [
+    #                 {
+    #                     'text': {
+    #                         'text': [result],
+    #                         'redactedText': [result]
+    #                     },
+    #                     'responseType': 'HANDLER_PROMPT',
+    #                     'source': 'VIRTUAL_AGENT'
+    #                 }
+    #             ]
+    #         }
+    #     }
+    # )
+    res = {"fulfillment_response": {"messages": [{"text": {"text": [result]}}]}}
+
+    # Returns json
+    return res
