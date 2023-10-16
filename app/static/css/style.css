@@ -32,8 +32,8 @@ body {
     display: flex;
     flex-direction: column;
     background: #eee;
-    width: 300px;
-    height: 350px;
+    width: 450px;
+    height: 600px;
     z-index: -123456;
     opacity: 0;
     transition: all .5s ease-in-out;
@@ -78,7 +78,7 @@ body {
 
 .messages__item {
     background: orange;
-    max-width: 60.6%;
+    max-width: 80%;
     width: fit-content;
 }
 
@@ -98,8 +98,8 @@ body {
 
 .chatbox__support {
     background: #f9f9f9;
-    height: 450px;
-    width: 350px;
+    height: 800px;
+    width: 500px;
     box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
@@ -197,4 +197,37 @@ body {
     border-bottom-left-radius: 50px;
     box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
     cursor: pointer;
+}
+
+@keyframes dotPulse {
+    0% { transform: scale(0.8); opacity: 0.5; }
+    50% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(0.8); opacity: 0.5; }
+}
+
+.dotPulseWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dotPulse {
+    background-color: #000;  /* 你可以改变颜色以适应你的设计 */
+    border-radius: 50%;
+    width: 8px;
+    height: 8px;
+    margin: 3px;
+    animation: dotPulse 1s infinite;
+}
+
+.dotPulse:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.dotPulse:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.dotPulse:nth-child(3) {
+    animation-delay: 0.4s;
 }

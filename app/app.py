@@ -79,9 +79,21 @@ def upload_file():
 @app.route('/predict', methods=['POST'])
 def predict():
     text = request.get_json().get("message")
+    session_id = request.get_json().get("sessionId")
+    print(session_id)
+    print(text)
     # TODO: check if text is valid
-    response = "This is a test response"
-    message = {"answer": response}
+    if user_qa.get(session_id) is None:
+        user_qa[session_id] = getqa()
+
+    # set the conversation expire time to 10 minutes
+    user_expiry[session_id] = time.time() + 600
+
+    qa = user_qa[session_id]
+    result = qa.run({"question": text})
+    print(f"Chatbot: {result}")
+
+    message = {"answer": result}
     return jsonify(message)
 
 
