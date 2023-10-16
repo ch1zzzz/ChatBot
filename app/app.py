@@ -3,6 +3,7 @@
 # @description: This module contains REST API of the app.
 
 from flask import Flask, request, jsonify, render_template
+from flask_cors import CORS
 import os
 import openai
 import time
@@ -21,6 +22,7 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 # set app secret key
 app = Flask(__name__, template_folder="templates")
 app.secret_key = os.getenv('SECRET_KEY')
+CORS(app)
 
 # store qa chain for each user: {session_id:ConversationalRetrievalChain}
 user_qa = {}
@@ -30,12 +32,17 @@ user_expiry = {}
 
 @app.route('/')
 def home():
-    return render_template('test.html')
+    return render_template('index.html')
 
 
 @app.route('/test')
 def test():
-    return render_template('index.html')
+    return render_template('test.html')
+
+
+@app.route('/base')
+def chatbot():
+    return render_template('base.html')
 
 
 @app.route('/upload')
@@ -67,6 +74,15 @@ def upload_file():
         return 'File successfully uploaded'
 
     return render_template('upload.html')
+
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    text = request.get_json().get("message")
+    # TODO: check if text is valid
+    response = "This is a test response"
+    message = {"answer": response}
+    return jsonify(message)
 
 
 @app.route('/dialogflow/cx/receiveMessage', methods=['POST'])
