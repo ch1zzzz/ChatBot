@@ -9,7 +9,9 @@ import openai
 import time
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
+import logging
 
+from app.decorators import require_valid_referer
 from app.embeddings import embedding
 from app.helper import allowed_file
 from app.question_answer_chain import getqa, get_session_id
@@ -23,6 +25,7 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 app = Flask(__name__, template_folder="templates")
 app.secret_key = os.getenv('SECRET_KEY')
 CORS(app)
+logging.basicConfig(filename='app.log', level=logging.DEBUG)
 
 # store qa chain for each user: {session_id:ConversationalRetrievalChain}
 user_qa = {}
@@ -32,6 +35,9 @@ user_expiry = {}
 
 @app.route('/')
 def home():
+    app.logger.info('This is an info message.')
+    app.logger.warning('This is a warning message.')
+    app.logger.error('This is an error message.')
     return render_template('index.html')
 
 
@@ -77,6 +83,7 @@ def upload_file():
 
 
 @app.route('/predict', methods=['POST'])
+@require_valid_referer
 def predict():
     text = request.get_json().get("message")
     session_id = request.get_json().get("sessionId")
@@ -90,6 +97,9 @@ def predict():
     user_expiry[session_id] = time.time() + 600
 
     qa = user_qa[session_id]
+
+    print(user_qa.keys())
+
     result = qa.run({"question": text})
     print(f"Chatbot: {result}")
 

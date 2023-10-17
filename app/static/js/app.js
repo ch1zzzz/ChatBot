@@ -8,6 +8,7 @@ class Chatbox {
 
         this.state = false;
         this.messages = [];
+        this.initialMessageDisplayed = false;
     }
 
     display() {
@@ -23,6 +24,19 @@ class Chatbox {
                 this.onSendButton(chatBox)
             }
         })
+
+        // show initial message
+        if (!this.initialMessageDisplayed) {
+            this.displayInitialMessage(chatBox);
+            this.initialMessageDisplayed = true;
+        }
+    }
+
+    displayInitialMessage(chatbox) {
+        const initialMsg = "Hello! I'm your Job Matching Assistant. I can help you find the perfect job opportunity from our job data. Just let me know what you're looking for, such as 'Registered nurse positions in Boston.' If you have questions about specific companies or the application process, feel free to contact our recruiter Jackson at xxx@xenonhealth.com.";
+        let initialMessage = { name: "Chatbot", message: initialMsg };
+        this.messages.push(initialMessage);
+        this.updateChatText(chatbox);
     }
 
     toggleState(chatbox) {
@@ -46,26 +60,25 @@ class Chatbox {
         let msg1 = { name: "User", message: text1 }
         this.messages.push(msg1);
 
-        // 检查 localStorage 是否已有 sessionId
+        // check if localStorage has sessionId
         let sessionId = localStorage.getItem("sessionId");
 
-        // 如果没有，则生成一个新的 sessionId 并存储它
+        // if not, create a new sessionId
         if (!sessionId) {
             sessionId = "uniqueID_" + Math.random().toString(36).substr(2, 9);  // 一个简单的随机 ID 生成方法
             localStorage.setItem("sessionId", sessionId);
         }
 
-        // 1. 直接更新对话框，显示用户输入
+        // 1. update chat text, show user's input
         this.updateChatText(chatbox);
 
-        // 2. 显示一个“加载中”的消息
-        // let loadingMsg = { name: "Chatbot", message: "Loading..." };  // 这里你可以替换为任何加载动画的HTML代码
+        // 2. show a loading message
         let loadingMsgHTML = '<div class="dotPulseWrapper"><div class="dotPulse"></div><div class="dotPulse"></div><div class="dotPulse"></div></div>';
         let loadingMsg = { name: "Chatbot", message: loadingMsgHTML };
         this.messages.push(loadingMsg);
         this.updateChatText(chatbox);
 
-        // 清空输入框
+        // empty input
         textField.value = '';
 
         fetch('http://127.0.0.1:5000/predict', {
