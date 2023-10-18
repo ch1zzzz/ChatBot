@@ -1,13 +1,16 @@
 # @author     : Jackson Zuo
 # @time       : 10/5/2023
 # @description: This module contains REST API of the app.
+import asyncio
+from typing import AsyncIterable
 
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, Response
 from flask_cors import CORS
 import os
 import openai
 import time
 from dotenv import load_dotenv
+from langchain.callbacks import AsyncIteratorCallbackHandler
 from werkzeug.utils import secure_filename
 import logging
 
@@ -82,6 +85,22 @@ def upload_file():
     return render_template('upload.html')
 
 
+async def send_message(text, qa):
+    callback = AsyncIteratorCallbackHandler()
+    task = asyncio.create_task(
+        qa.arun({"question": text}, callbacks=[callback])
+    )
+
+    try:
+        async for token in callback.aiter():
+            yield token.encode('utf-8')
+    except Exception as e:
+        print(f"Caught exception: {e}")
+    finally:
+        callback.done.set()
+
+    await task
+
 @app.route('/predict', methods=['POST'])
 @require_valid_referer
 def predict():
@@ -100,11 +119,13 @@ def predict():
 
     print(user_qa.keys())
 
-    result = qa.run({"question": text})
-    #print(f"Chatbot: {result}")
-
-    message = {"answer": result}
-    return jsonify(message)
+    generator = send_message(text, qa)
+    return Response(generator, content_type="text/event-stream")
+    # result = qa.run({"question": text})
+    # print(f"Chatbot: {result}")
+    #
+    # message = {"answer": result}
+    # return jsonify(message)
 
 
 @app.route('/dialogflow/cx/receiveMessage', methods=['POST'])

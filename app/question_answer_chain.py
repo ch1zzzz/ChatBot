@@ -5,6 +5,7 @@
 import os
 import openai
 from dotenv import load_dotenv
+from langchain.callbacks import AsyncIteratorCallbackHandler
 from langchain.llms import OpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import ConversationalRetrievalChain, LLMChain
