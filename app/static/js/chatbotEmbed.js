@@ -156,6 +156,7 @@ body {
     background: #F4F6F8;
     padding: 8px 12px;
     max-width: 70%;
+    line-height: 1.5;
 }
 
 .messages__item--visitor,
@@ -270,7 +271,7 @@ body {
             </div>
         </div>
         <div class="chatbox__button">
-            <button><img src="../static/img/chatbox-icon.svg" /></button>
+            <button><img src="../static/img/chatbox-icon.png" /></button>
         </div>
     </div>
 </div>`;

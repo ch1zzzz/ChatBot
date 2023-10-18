@@ -101,7 +101,7 @@ def predict():
     print(user_qa.keys())
 
     result = qa.run({"question": text})
-    print(f"Chatbot: {result}")
+    #print(f"Chatbot: {result}")
 
     message = {"answer": result}
     return jsonify(message)

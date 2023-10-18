@@ -7,11 +7,12 @@ import openai
 from dotenv import load_dotenv
 from langchain.llms import OpenAI
 from langchain.prompts import PromptTemplate
-from langchain.chains import ConversationalRetrievalChain
+from langchain.chains import ConversationalRetrievalChain, LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.memory import ConversationBufferMemory, ConversationSummaryMemory
 from langchain.vectorstores import FAISS
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
 load_dotenv()
 
@@ -85,16 +86,14 @@ Chatbot:"""
 
 template3 = """You are an AI assistant specifically tasked with finding matching
 job opportunities in our job data based on user requests. Your main job is helping 
-users find a matching job in the training data and provide them with the job roles, 
-qualifications, benefits and so on. 
+users find a matching job in the training data and provide them with the job information. 
 
 ###
 USER: Do you have RN openings near NJ?
 AI: I have information about RN openings in New Jersey (NJ). Here are some job opportunities for you:
 [Company No.] : [job description from data]
 [Company No.]: ... 
-Please note that the availability of positions may vary, and it's always a good idea to
-contact our recruiter Jackson via yongqiang.zuo@xenonhealth.com
+For more details please contact our recruiter via xxx@xenonhealth.com
 
 ###
 Context from data: {context}
@@ -109,7 +108,7 @@ prompt = PromptTemplate(
     template=template3
 )
 
-llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.2)
+llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.2, streaming=True, callbacks=[StreamingStdOutCallbackHandler()])
 
 # _template = """Given the following conversation and a follow up input, use the follow up input as the standalone question.
 # Don't change any character.
@@ -148,6 +147,28 @@ def getqa():
         verbose=True
     )
     return qa
+
+# class NoOpLLMChain(LLMChain):
+#     """No-op LLM chain."""
+#
+#     def __init__(self):
+#         """Initialize."""
+#         super().__init__(llm=OpenAI(), prompt=PromptTemplate(template="", input_variables=[]))
+#
+#     async def arun(self, question: str, *args, **kwargs) -> str:
+#         return question
+# def getqa():
+#     memory = ConversationSummaryMemory(
+#         llm=OpenAI(temperature=0), memory_key="chat_history", return_messages=True)
+#     qa = ConversationalRetrievalChain.from_llm(
+#         llm=llm,
+#         retriever=db.as_retriever(),
+#         combine_docs_chain_kwargs={"prompt": prompt},
+#         memory=memory,
+#         verbose=True
+#     )
+#     qa.question_generator = NoOpLLMChain()
+#     return qa
 
 
 def get_session_id(data):
