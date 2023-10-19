@@ -85,7 +85,7 @@ def upload_file():
     return render_template('upload.html')
 
 
-async def send_message(text, qa):
+async def send_message(text, qa) -> AsyncIterable[str]:
     callback = AsyncIteratorCallbackHandler()
     task = asyncio.create_task(
         qa.arun({"question": text}, callbacks=[callback])
@@ -93,7 +93,7 @@ async def send_message(text, qa):
 
     try:
         async for token in callback.aiter():
-            yield token.encode('utf-8')
+            yield token
     except Exception as e:
         print(f"Caught exception: {e}")
     finally:
@@ -119,7 +119,8 @@ def predict():
 
     print(user_qa.keys())
 
-    generator = send_message(text, qa)
+    def generator():
+        for part in qa.run()
     return Response(generator, content_type="text/event-stream")
     # result = qa.run({"question": text})
     # print(f"Chatbot: {result}")
