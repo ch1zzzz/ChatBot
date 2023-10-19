@@ -50,7 +50,7 @@ class Chatbox {
         }
     }
 
-    onSendButton(chatbox) {
+    async onSendButton(chatbox) {
         var textField = chatbox.querySelector('input');
         let text1 = textField.value
         if (text1 === "") {
@@ -74,7 +74,7 @@ class Chatbox {
 
         // 2. show a loading message
         let loadingMsgHTML = '<div class="dotPulseWrapper"><div class="dotPulse"></div><div class="dotPulse"></div><div class="dotPulse"></div></div>';
-        let loadingMsg = { name: "Chatbot", message: loadingMsgHTML };
+        let loadingMsg = { name: "Chatbot", message: loadingMsgHTML, type: "loading" };
         this.messages.push(loadingMsg);
         this.updateChatText(chatbox);
 
@@ -102,36 +102,29 @@ class Chatbox {
 //            textField.value = ''
 //          });
 
-        // 使用 POST 请求来提交消息
-        fetch('http://127.0.0.1:5000/predict', {
-          method: 'POST',
-          body: JSON.stringify({ message: text1, sessionId: sessionId }),
-          mode: 'cors',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-        })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-        });
-
-        // 使用 SSE 或 WebSocket 进行消息接收
-        const eventSource = new EventSource('http://127.0.0.1:5000/predict');
-
-        eventSource.onmessage = function(event) {
-          const data = JSON.parse(event.data);
-
-          // 处理接收到的消息
-          this.messages.pop();
-          let msg2 = { name: "Chatbot", message: data.answer };
+        const response = await fetch('http://127.0.0.1:5000/predict', {
+            method: 'POST',
+            body: JSON.stringify({ message: text1, sessionId: sessionId }),
+            mode: 'cors',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+          });
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        const newMsg = {name: "Chatbot", message: "" };
+        this.messages.push(newMsg)
+        while (true) {
+          const {done, value} = await reader.read();
+          if (done) break;
+          const text = decoder.decode(value);
+          console.log(text)
+          let msg2 = this.messages.pop()
+//          { name: "Chatbot", message: r.answer };
+          msg2.message = msg2.message + text;
           this.messages.push(msg2);
-          this.updateChatText(chatbox);
-        };
+          this.updateChatText(chatbox)
+        }
 
     }
 

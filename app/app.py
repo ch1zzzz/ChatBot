@@ -122,9 +122,10 @@ def predict():
 
     print(user_qa.keys())
 
-    async def generate():
-        async for part in qa.run({"question": text}):
-            yield 'data: {0}\n\n'.format(json.dumps(part))
+    def generate():
+        for part in qa.run({"question": text}):
+            yield part
+            # yield 'data: {0}\n\n'.format(json.dumps(part))
 
     # result = qa.run({"question": text})
     # print(f"Chatbot: {result}")
