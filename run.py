@@ -11,10 +11,12 @@ def initialize_app():
     print("Application started, performing initialization operations.")
 
 
-@app.before_first_request
-def run_on_start():
-    initialize_app()
+# @app.before_serving
+# def run_on_start():
+#     initialize_app()
 
 
 if __name__ == '__main__':
+    with app.app_context():
+        initialize_app()
     app.run(debug=True)

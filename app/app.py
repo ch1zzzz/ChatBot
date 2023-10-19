@@ -2,9 +2,11 @@
 # @time       : 10/5/2023
 # @description: This module contains REST API of the app.
 import asyncio
+import json
 from typing import AsyncIterable
 
 from flask import Flask, request, jsonify, render_template, Response
+# from quart import Quart, request, Response, render_template, jsonify
 from flask_cors import CORS
 import os
 import openai
@@ -101,6 +103,7 @@ async def send_message(text, qa) -> AsyncIterable[str]:
 
     await task
 
+
 @app.route('/predict', methods=['POST'])
 @require_valid_referer
 def predict():
@@ -119,14 +122,14 @@ def predict():
 
     print(user_qa.keys())
 
-    def generator():
-        for part in qa.run()
-    return Response(generator, content_type="text/event-stream")
+    async def generate():
+        async for part in qa.run({"question": text}):
+            yield 'data: {0}\n\n'.format(json.dumps(part))
+
     # result = qa.run({"question": text})
     # print(f"Chatbot: {result}")
-    #
-    # message = {"answer": result}
-    # return jsonify(message)
+
+    return Response(generate(), mimetype='text/event-stream')
 
 
 @app.route('/dialogflow/cx/receiveMessage', methods=['POST'])

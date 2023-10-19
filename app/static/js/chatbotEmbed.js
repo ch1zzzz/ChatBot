@@ -360,26 +360,58 @@ body {
         // empty input
         textField.value = '';
 
-        fetch('http://127.0.0.1:5000/predict', {
-            method: 'POST',
-            body: JSON.stringify({ message: text1, sessionId: sessionId }),
-            mode: 'cors',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-          })
-          .then(r => r.json())
-          .then(r => {
-              this.messages.pop()
-              let msg2 = { name: "Chatbot", message: r.answer };
-              this.messages.push(msg2);
-              this.updateChatText(chatbox)
+//        fetch('http://127.0.0.1:5000/predict', {
+//            method: 'POST',
+//            body: JSON.stringify({ message: text1, sessionId: sessionId }),
+//            mode: 'cors',
+//            headers: {
+//              'Content-Type': 'application/json'
+//            },
+//          })
+//          .then(r => r.json())
+//          .then(r => {
+//              this.messages.pop()
+//              let msg2 = { name: "Chatbot", message: r.answer };
+//              this.messages.push(msg2);
+//              this.updateChatText(chatbox)
+//
+//        }).catch((error) => {
+//            console.error('Error:', error);
+//            this.updateChatText(chatbox)
+//            textField.value = ''
+//          });
 
-        }).catch((error) => {
-            console.error('Error:', error);
-            this.updateChatText(chatbox)
-            textField.value = ''
-          });
+        // 使用 POST 请求来提交消息
+        fetch('http://127.0.0.1:5000/predict', {
+          method: 'POST',
+          body: JSON.stringify({ message: text1, sessionId: sessionId }),
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+
+        // 使用 SSE 或 WebSocket 进行消息接收
+        const eventSource = new EventSource('http://127.0.0.1:5000/predict');
+
+        eventSource.onmessage = function(event) {
+          const data = JSON.parse(event.data);
+
+          // 处理接收到的消息
+          this.messages.pop();
+          let msg2 = { name: "Chatbot", message: data.answer };
+          this.messages.push(msg2);
+          this.updateChatText(chatbox);
+        };
+
     }
 
     updateChatText(chatbox) {
