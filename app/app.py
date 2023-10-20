@@ -1,18 +1,19 @@
 # @author     : Jackson Zuo
 # @time       : 10/5/2023
 # @description: This module contains REST API of the app.
+
 import asyncio
-import json
+import threading
+from queue import Queue
 from typing import AsyncIterable
 
 from flask import Flask, request, jsonify, render_template, Response
-# from quart import Quart, request, Response, render_template, jsonify
 from flask_cors import CORS
 import os
 import openai
 import time
 from dotenv import load_dotenv
-from langchain.callbacks import AsyncIteratorCallbackHandler
+from langchain.callbacks import AsyncIteratorCallbackHandler, StreamingStdOutCallbackHandler
 from werkzeug.utils import secure_filename
 import logging
 
@@ -20,6 +21,7 @@ from app.decorators import require_valid_referer
 from app.embeddings import embedding
 from app.helper import allowed_file
 from app.question_answer_chain import getqa, get_session_id
+from app.streaming import StreamingStdOutCallbackHandlerYield, generate
 from config import Config
 
 # Load OPENAI API Key
@@ -30,7 +32,7 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 app = Flask(__name__, template_folder="templates")
 app.secret_key = os.getenv('SECRET_KEY')
 CORS(app)
-logging.basicConfig(filename='app.log', level=logging.DEBUG)
+logging.basicConfig(filename='app.log', level=logging.INFO)
 
 # store qa chain for each user: {session_id:ConversationalRetrievalChain}
 user_qa = {}
@@ -40,12 +42,10 @@ user_expiry = {}
 
 @app.route('/')
 def home():
-    app.logger.info('This is an info message.')
-    app.logger.warning('This is a warning message.')
-    app.logger.error('This is an error message.')
     return render_template('index.html')
 
 
+# page integrated with dialogflow
 @app.route('/test')
 def test():
     return render_template('test.html')
@@ -87,31 +87,16 @@ def upload_file():
     return render_template('upload.html')
 
 
-async def send_message(text, qa) -> AsyncIterable[str]:
-    callback = AsyncIteratorCallbackHandler()
-    task = asyncio.create_task(
-        qa.arun({"question": text}, callbacks=[callback])
-    )
-
-    try:
-        async for token in callback.aiter():
-            yield token
-    except Exception as e:
-        print(f"Caught exception: {e}")
-    finally:
-        callback.done.set()
-
-    await task
-
-
 @app.route('/predict', methods=['POST'])
 @require_valid_referer
 def predict():
     text = request.get_json().get("message")
     session_id = request.get_json().get("sessionId")
-    print(session_id)
-    print(text)
+    logging.info(f"session_id: {session_id}, \n text: {text}")
+
     # TODO: check if text is valid
+
+    # create new chain
     if user_qa.get(session_id) is None:
         user_qa[session_id] = getqa()
 
@@ -120,17 +105,26 @@ def predict():
 
     qa = user_qa[session_id]
 
-    print(user_qa.keys())
+    # streaming test using openai api
+    # def generate1():
+    #     completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[
+    #         {"role": "system", "content": "You're an assistant."},
+    #         {"role": "user", "content": f"{text}"},
+    #     ], stream=True, max_tokens=500, temperature=0)
+    #
+    #     for line in completion:
+    #         if 'content' in line['choices'][0]['delta']:
+    #             yield line['choices'][0]['delta']['content']
 
-    def generate():
-        for part in qa.run({"question": text}):
-            yield part
-            # yield 'data: {0}\n\n'.format(json.dumps(part))
+    # streaming the output
+    q = Queue()
 
-    # result = qa.run({"question": text})
-    # print(f"Chatbot: {result}")
+    def generate2():
+        callback_fn = StreamingStdOutCallbackHandlerYield(q)
+        return qa.run({"question": text}, callbacks=[callback_fn, StreamingStdOutCallbackHandler()])
 
-    return Response(generate(), mimetype='text/event-stream')
+    threading.Thread(target=generate2).start()
+    return Response(generate(q), mimetype='text/event-stream')
 
 
 @app.route('/dialogflow/cx/receiveMessage', methods=['POST'])

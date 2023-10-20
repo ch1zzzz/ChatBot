@@ -15,7 +15,6 @@ class Chatbox {
         const {openButton, chatBox, sendButton} = this.args;
 
         openButton.addEventListener('click', () => this.toggleState(chatBox))
-
         sendButton.addEventListener('click', () => this.onSendButton(chatBox))
 
         const node = chatBox.querySelector('input');
@@ -73,59 +72,39 @@ class Chatbox {
         this.updateChatText(chatbox);
 
         // 2. show a loading message
-        let loadingMsgHTML = '<div class="dotPulseWrapper"><div class="dotPulse"></div><div class="dotPulse"></div><div class="dotPulse"></div></div>';
-        let loadingMsg = { name: "Chatbot", message: loadingMsgHTML, type: "loading" };
-        this.messages.push(loadingMsg);
-        this.updateChatText(chatbox);
+//        let loadingMsgHTML = '<div class="dotPulseWrapper"><div class="dotPulse"></div><div class="dotPulse"></div><div class="dotPulse"></div></div>';
+//        let loadingMsg = { name: "Chatbot", message: loadingMsgHTML, type: "loading" };
+//        this.messages.push(loadingMsg);
+//        this.updateChatText(chatbox);
 
         // empty input
         textField.value = '';
 
-//        fetch('http://127.0.0.1:5000/predict', {
-//            method: 'POST',
-//            body: JSON.stringify({ message: text1, sessionId: sessionId }),
-//            mode: 'cors',
-//            headers: {
-//              'Content-Type': 'application/json'
-//            },
-//          })
-//          .then(r => r.json())
-//          .then(r => {
-//              this.messages.pop()
-//              let msg2 = { name: "Chatbot", message: r.answer };
-//              this.messages.push(msg2);
-//              this.updateChatText(chatbox)
-//
-//        }).catch((error) => {
-//            console.error('Error:', error);
-//            this.updateChatText(chatbox)
-//            textField.value = ''
-//          });
-
-        const response = await fetch('http://127.0.0.1:5000/predict', {
-            method: 'POST',
-            body: JSON.stringify({ message: text1, sessionId: sessionId }),
-            mode: 'cors',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-          });
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        const newMsg = {name: "Chatbot", message: "" };
-        this.messages.push(newMsg)
-        while (true) {
-          const {done, value} = await reader.read();
-          if (done) break;
-          const text = decoder.decode(value);
-          console.log(text)
-          let msg2 = this.messages.pop()
-//          { name: "Chatbot", message: r.answer };
-          msg2.message = msg2.message + text;
-          this.messages.push(msg2);
-          this.updateChatText(chatbox)
+        try {
+            const response = await fetch('http://127.0.0.1:5000/predict', {
+                method: 'POST',
+                body: JSON.stringify({ message: text1, sessionId: sessionId }),
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            const newMsg = {name: "Chatbot", message: "" };
+            this.messages.push(newMsg)
+            while (true) {
+              const {done, value} = await reader.read();
+              if (done) break;
+              const text = decoder.decode(value);
+              let msg2 = this.messages.pop()
+              msg2.message = msg2.message + text;
+              this.messages.push(msg2);
+              this.updateChatText(chatbox)
+            }
+        } catch (error) {
+            console.error(error)
         }
-
     }
 
     updateChatText(chatbox) {

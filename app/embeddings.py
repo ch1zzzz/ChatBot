@@ -31,9 +31,7 @@ def embedding():
     embeddings = OpenAIEmbeddings()
 
     # Create vector database by FAISS
-    db = FAISS.from_documents(documents=texts,
-                              embedding=embeddings,
-                              )
+    db = FAISS.from_documents(documents=texts, embedding=embeddings)
 
     # save the embeddings for reloading
     db.save_local("faiss_index_nursejobs")
