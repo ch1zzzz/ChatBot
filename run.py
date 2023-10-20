@@ -12,6 +12,7 @@ def initialize_app():
 
 
 # @app.before_serving
+# @app.before_first_request
 # def run_on_start():
 #     initialize_app()
 
