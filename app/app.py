@@ -94,8 +94,6 @@ def predict():
     session_id = request.get_json().get("sessionId")
     logging.info(f"session_id: {session_id}, \n text: {text}")
 
-    # TODO: check if text is valid
-
     # create new chain
     if user_qa.get(session_id) is None:
         user_qa[session_id] = getqa()
@@ -105,25 +103,14 @@ def predict():
 
     qa = user_qa[session_id]
 
-    # streaming test using openai api
-    # def generate1():
-    #     completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[
-    #         {"role": "system", "content": "You're an assistant."},
-    #         {"role": "user", "content": f"{text}"},
-    #     ], stream=True, max_tokens=500, temperature=0)
-    #
-    #     for line in completion:
-    #         if 'content' in line['choices'][0]['delta']:
-    #             yield line['choices'][0]['delta']['content']
-
-    # streaming the output
     q = Queue()
 
-    def generate2():
+    # streaming the output
+    def streaming():
         callback_fn = StreamingStdOutCallbackHandlerYield(q)
         return qa.run({"question": text}, callbacks=[callback_fn, StreamingStdOutCallbackHandler()])
 
-    threading.Thread(target=generate2).start()
+    threading.Thread(target=streaming).start()
     return Response(generate(q), mimetype='text/event-stream')
 
 
@@ -168,22 +155,6 @@ def cx_receive_message():
     print(f"Chatbot: {result}")
     print("result finished!!!!!!!!")
 
-    # return jsonify(
-    #     {
-    #         'fulfillment_response': {
-    #             'messages': [
-    #                 {
-    #                     'text': {
-    #                         'text': [result],
-    #                         'redactedText': [result]
-    #                     },
-    #                     'responseType': 'HANDLER_PROMPT',
-    #                     'source': 'VIRTUAL_AGENT'
-    #                 }
-    #             ]
-    #         }
-    #     }
-    # )
     res = {"fulfillment_response": {"messages": [{"text": {"text": [result]}}]}}
 
     # Returns json

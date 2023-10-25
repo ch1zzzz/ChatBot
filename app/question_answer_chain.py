@@ -6,13 +6,15 @@ import os
 
 import openai
 from dotenv import load_dotenv
-from langchain.chains import ConversationalRetrievalChain
+from langchain.chains import ConversationalRetrievalChain, LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.llms import OpenAI
-from langchain.memory import ConversationSummaryMemory
+from langchain.memory import ConversationSummaryMemory, ConversationBufferMemory
 from langchain.prompts import PromptTemplate
 from langchain.vectorstores import FAISS
+
+from config import Config
 
 load_dotenv()
 
@@ -84,7 +86,7 @@ Context from data: {context}
 Human: {question}
 Chatbot:"""
 
-#template in use
+# template in use
 template3 = """You are an AI assistant specifically tasked with finding fit
 jobs. Use the following context based and user requests, present any jobs 
 that might fit user's requirement. Do not answer or make up positions that 
@@ -111,16 +113,29 @@ prompt = PromptTemplate(
     template=template3
 )
 
-
-condense_template = """use the follow up input as the output.Don't change any character.For example.
-input: I want to find a job as LPN
-Standalone question: I want to find a job as LPN
-Follow Up Input: {question}
-Standalone question:"""
-condense_question_prompt = PromptTemplate.from_template(condense_template)
+# condense_template = """use the follow up input as the output.Don't change any character.For example.
+# input: I want to find a job as LPN
+# Standalone question: I want to find a job as LPN
+# Follow Up Input: {question}
+# Standalone question:"""
+# condense_question_prompt = PromptTemplate.from_template(condense_template)
 
 embeddings = OpenAIEmbeddings()
-db = FAISS.load_local("faiss_index_nursejobs", embeddings)
+db = FAISS.load_local(Config.FAISS_INDEX_PATH, embeddings)
+
+
+class NoOpLLMChain(LLMChain):
+    """No-op LLM chain."""
+
+    def __init__(self):
+        """Initialize."""
+        super().__init__(llm=OpenAI(), prompt=PromptTemplate(template="", input_variables=[]))
+
+    async def arun(self, question: str, *args, **kwargs) -> str:
+        return question
+
+    def run(self, question: str, *args, **kwargs) -> str:
+        return question
 
 
 def getqa():
@@ -140,33 +155,12 @@ def getqa():
         retriever=db.as_retriever(),
         combine_docs_chain_kwargs={"prompt": prompt},
         memory=memory,
-        condense_question_prompt=condense_question_prompt,
+        # condense_question_prompt=condense_question_prompt,
         verbose=True
     )
+    qa.question_generator = NoOpLLMChain()
     return qa
 
-
-# class NoOpLLMChain(LLMChain):
-#     """No-op LLM chain."""
-#
-#     def __init__(self):
-#         """Initialize."""
-#         super().__init__(llm=OpenAI(), prompt=PromptTemplate(template="", input_variables=[]))
-#
-#     async def arun(self, question: str, *args, **kwargs) -> str:
-#         return question
-# def getqa():
-#     memory = ConversationSummaryMemory(
-#         llm=OpenAI(temperature=0), memory_key="chat_history", return_messages=True)
-#     qa = ConversationalRetrievalChain.from_llm(
-#         llm=llm,
-#         retriever=db.as_retriever(),
-#         combine_docs_chain_kwargs={"prompt": prompt},
-#         memory=memory,
-#         verbose=True
-#     )
-#     qa.question_generator = NoOpLLMChain()
-#     return qa
 
 # helper function used in Dialogflow
 def get_session_id(data):

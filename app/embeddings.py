@@ -9,6 +9,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 from dotenv import load_dotenv
+from config import Config
 
 load_dotenv()
 
@@ -34,4 +35,4 @@ def embedding():
     db = FAISS.from_documents(documents=texts, embedding=embeddings)
 
     # save the embeddings for reloading
-    db.save_local("faiss_index_nursejobs")
+    db.save_local(Config.FAISS_INDEX_PATH)

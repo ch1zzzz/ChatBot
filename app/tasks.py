@@ -3,6 +3,8 @@
 # @description: tasks to do by scheduler
 
 import time
+from datetime import datetime
+
 from app.app import user_qa, user_expiry
 
 
@@ -22,3 +24,5 @@ def delete_expired_sessions():
     for session_id in sessions_to_delete:
         del user_qa[session_id]
         del user_expiry[session_id]
+
+    print("expired session deleted: " + str(datetime.now()))
