@@ -172,6 +172,7 @@ body {
     border-bottom-left-radius: 20px;
     background: var(--primary);
     color: white;
+    word-wrap: break-word;
 }
 
 /* FOOTER */
