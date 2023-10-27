@@ -2,19 +2,12 @@
 # @time       : 10/5/2023
 # @description: Create embeddings for input file.
 
-import os
-import openai
+
 from langchain.document_loaders import CSVLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
-from dotenv import load_dotenv
 from config import Config
-
-load_dotenv()
-
-# openai api keys
-openai.api_key = os.getenv('OPENAI_API_KEY')
 
 
 def embedding():

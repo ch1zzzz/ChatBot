@@ -3,7 +3,6 @@
 # @description: Create ConversationalRetrievalChain according to the prompt.
 
 import os
-
 import openai
 from dotenv import load_dotenv
 from langchain.chains import ConversationalRetrievalChain, LLMChain
@@ -13,6 +12,7 @@ from langchain.llms import OpenAI
 from langchain.memory import ConversationSummaryMemory, ConversationBufferMemory
 from langchain.prompts import PromptTemplate
 from langchain.vectorstores import FAISS
+from werkzeug.utils import secure_filename
 
 from config import Config
 
@@ -121,7 +121,10 @@ prompt = PromptTemplate(
 # condense_question_prompt = PromptTemplate.from_template(condense_template)
 
 embeddings = OpenAIEmbeddings()
-db = FAISS.load_local(Config.FAISS_INDEX_PATH, embeddings)
+# use relative path to avoid path error
+current_dir = os.path.dirname(os.path.abspath(__file__))
+file_path = os.path.join(current_dir, "..", "..", Config.FAISS_INDEX_PATH)
+db = FAISS.load_local(file_path, embeddings)
 
 
 class NoOpLLMChain(LLMChain):

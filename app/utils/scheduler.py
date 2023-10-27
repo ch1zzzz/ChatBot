@@ -14,7 +14,7 @@ def configure_scheduler(app):
     app.config['JOBS'] = [
         {
             'id': 'cleanup_job',
-            'func': 'app.tasks:delete_expired_sessions',
+            'func': 'app.utils.tasks:delete_expired_sessions',
             'trigger': 'interval',
             'seconds': 660
         }

@@ -1,6 +1,6 @@
-from app.app import app
-from app.embeddings import embedding
-from app.scheduler import configure_scheduler, init_scheduler
+from app import app
+from app.utils.embeddings import embedding
+from app.utils.scheduler import configure_scheduler, init_scheduler
 
 
 # config scheduler and perform embedding

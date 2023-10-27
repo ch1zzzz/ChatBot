@@ -2,42 +2,21 @@
 # @time       : 10/5/2023
 # @description: This module contains REST API of the app.
 
-import asyncio
 import threading
 from queue import Queue
-from typing import AsyncIterable
-
-from flask import Flask, request, jsonify, render_template, Response
-from flask_cors import CORS
+from flask import request, jsonify, render_template, Response
 import os
-import openai
 import time
-from dotenv import load_dotenv
-from langchain.callbacks import AsyncIteratorCallbackHandler, StreamingStdOutCallbackHandler
+from langchain.callbacks import StreamingStdOutCallbackHandler
 from werkzeug.utils import secure_filename
 import logging
-
-from app.decorators import require_valid_referer
-from app.embeddings import embedding
-from app.helper import allowed_file
-from app.question_answer_chain import getqa, get_session_id
-from app.streaming import StreamingStdOutCallbackHandlerYield, generate
+from app import app
+from app.utils.decorators import require_valid_referer
+from app.utils.embeddings import embedding
+from app.utils.helper import allowed_file
+from app.utils.question_answer_chain import getqa, get_session_id
+from app.utils.streaming import StreamingStdOutCallbackHandlerYield, generate
 from config import Config
-
-# Load OPENAI API Key
-load_dotenv()
-openai.api_key = os.getenv('OPENAI_API_KEY')
-
-# set app secret key
-app = Flask(__name__, template_folder="templates")
-app.secret_key = os.getenv('SECRET_KEY')
-CORS(app)
-logging.basicConfig(filename='app.log', level=logging.INFO)
-
-# store qa chain for each user: {session_id:ConversationalRetrievalChain}
-user_qa = {}
-# store expiration for each chain: {session_id:expiration}
-user_expiry = {}
 
 
 @app.route('/')
@@ -95,13 +74,13 @@ def predict():
     logging.info(f"session_id: {session_id}, \n text: {text}")
 
     # create new chain
-    if user_qa.get(session_id) is None:
-        user_qa[session_id] = getqa()
+    if app.user_qa.get(session_id) is None:
+        app.user_qa[session_id] = getqa()
 
     # set the conversation expire time to 10 minutes
-    user_expiry[session_id] = time.time() + 600
+    app.user_expiry[session_id] = time.time() + 600
 
-    qa = user_qa[session_id]
+    qa = app.user_qa[session_id]
 
     q = Queue()
 
@@ -143,13 +122,13 @@ def cx_receive_message():
             }
         )
 
-    if user_qa.get(session_id) is None:
-        user_qa[session_id] = getqa()
+    if app.user_qa.get(session_id) is None:
+        app.user_qa[session_id] = getqa()
 
     # set the conversation expire time to 10 minutes
-    user_expiry[session_id] = time.time() + 600
+    app.user_expiry[session_id] = time.time() + 600
 
-    qa = user_qa[session_id]
+    qa = app.user_qa[session_id]
     query_text = data['text']
     result = qa.run({"question": query_text})
     print(f"Chatbot: {result}")
