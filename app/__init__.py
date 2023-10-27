@@ -7,6 +7,7 @@ import openai
 from dotenv import load_dotenv
 from flask import Flask
 from flask_cors import CORS
+from werkzeug.exceptions import HTTPException
 
 
 def create_app():
