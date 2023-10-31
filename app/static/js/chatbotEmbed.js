@@ -247,6 +247,27 @@ body {
 .dotPulse:nth-child(3) {
     animation-delay: 0.4s;
 }
+
+
+.email-button {
+    text-align: center;
+    margin-top: 20px; /* 调整按钮与聊天框的垂直距离 */
+}
+
+.email-button {
+    text-align: center;
+    margin-top: 20px; /* 调整按钮与聊天框的垂直距离 */
+}
+
+.email-button__send {
+    background: none; /* 去除背景颜色 */
+    border: none; /* 去除边框 */
+    cursor: pointer;
+    font-size: 14px; /* 设置字体大小 */
+    text-decoration: underline; /* 添加下划线 */
+}
+
+
 `;
         document.head.appendChild(style);
 
@@ -285,6 +306,7 @@ body {
             openButton: document.querySelector('.chatbox__button'),
             chatBox: document.querySelector('.chatbox__support'),
             sendButton: document.querySelector('.send__button')
+//            emailButton: document.querySelector('.email__button')
         }
 
         this.state = false;
@@ -293,10 +315,11 @@ body {
     }
 
     display() {
-        const {openButton, chatBox, sendButton} = this.args;
+        const {openButton, chatBox, sendButton, emailButton} = this.args;
 
         openButton.addEventListener('click', () => this.toggleState(chatBox))
         sendButton.addEventListener('click', () => this.onSendButton(chatBox))
+//        emailButton.addEventListener('click', () => this.onEmailButton())
 
         const node = chatBox.querySelector('input');
         node.addEventListener("keyup", ({key}) => {
@@ -403,6 +426,19 @@ body {
 
         const chatmessage = chatbox.querySelector('.chatbox__messages');
         chatmessage.innerHTML = html;
+        chatmessage.scrollTop = Infinity;
+    }
+
+    onEmailButton() {
+        const chatHistory = this.messages.map(message => `${message.sender}: ${message.text}`).join('\n');
+
+        const emailSubject = 'Job Inquiry';
+        const emailRecipient = 'hr@example.com';
+
+        const mailtoLink = `mailto:${emailRecipient}?subject=${emailSubject}&body=Previous Chat History:%0D%0A%0D%0A${encodeURIComponent(chatHistory)}`;
+
+        // open user's mail client
+        window.location.href = mailtoLink;
     }
 }
 

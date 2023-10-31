@@ -4,6 +4,7 @@ class Chatbox {
             openButton: document.querySelector('.chatbox__button'),
             chatBox: document.querySelector('.chatbox__support'),
             sendButton: document.querySelector('.send__button')
+//            emailButton: document.querySelector('.email__button')
         }
 
         this.state = false;
@@ -12,10 +13,11 @@ class Chatbox {
     }
 
     display() {
-        const {openButton, chatBox, sendButton} = this.args;
+        const {openButton, chatBox, sendButton, emailButton} = this.args;
 
         openButton.addEventListener('click', () => this.toggleState(chatBox))
         sendButton.addEventListener('click', () => this.onSendButton(chatBox))
+//        emailButton.addEventListener('click', () => this.onEmailButton())
 
         const node = chatBox.querySelector('input');
         node.addEventListener("keyup", ({key}) => {
@@ -122,6 +124,19 @@ class Chatbox {
 
         const chatmessage = chatbox.querySelector('.chatbox__messages');
         chatmessage.innerHTML = html;
+        chatmessage.scrollTop = Infinity;
+    }
+
+    onEmailButton() {
+        const chatHistory = this.messages.map(message => `${message.sender}: ${message.text}`).join('\n');
+
+        const emailSubject = 'Job Inquiry';
+        const emailRecipient = 'hr@example.com';
+
+        const mailtoLink = `mailto:${emailRecipient}?subject=${emailSubject}&body=Previous Chat History:%0D%0A%0D%0A${encodeURIComponent(chatHistory)}`;
+
+        // open user's mail client
+        window.location.href = mailtoLink;
     }
 }
 

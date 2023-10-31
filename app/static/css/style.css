@@ -243,3 +243,24 @@ body {
 .dotPulse:nth-child(3) {
     animation-delay: 0.4s;
 }
+
+
+.email-button {
+    text-align: center;
+    margin-top: 20px; /* 调整按钮与聊天框的垂直距离 */
+}
+
+.email-button {
+    text-align: center;
+    margin-top: 20px; /* 调整按钮与聊天框的垂直距离 */
+}
+
+.email-button__send {
+    background: none; /* 去除背景颜色 */
+    border: none; /* 去除边框 */
+    cursor: pointer;
+    font-size: 14px; /* 设置字体大小 */
+    text-decoration: underline; /* 添加下划线 */
+}
+
+
