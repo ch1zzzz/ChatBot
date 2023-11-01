@@ -215,56 +215,17 @@ body {
     cursor: pointer;
 }
 
-@keyframes dotPulse {
-    0% { transform: scale(0.8); opacity: 0.5; }
-    50% { transform: scale(1); opacity: 1; }
-    100% { transform: scale(0.8); opacity: 0.5; }
-}
 
-.dotPulseWrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.dotPulse {
-    background-color: #000;
-    border-radius: 50%;
-    width: 8px;
-    height: 8px;
-    margin: 3px;
-    animation: dotPulse 1s infinite;
-}
-
-.dotPulse:nth-child(1) {
-    animation-delay: 0s;
-}
-
-.dotPulse:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.dotPulse:nth-child(3) {
-    animation-delay: 0.4s;
-}
-
-
-.email-button {
+.email__button {
     text-align: center;
-    margin-top: 20px; /* 调整按钮与聊天框的垂直距离 */
+    margin-top: 20px;
 }
 
-.email-button {
-    text-align: center;
-    margin-top: 20px; /* 调整按钮与聊天框的垂直距离 */
-}
-
-.email-button__send {
-    background: none; /* 去除背景颜色 */
-    border: none; /* 去除边框 */
+.email__button__send {
+    border: none;
+    background: none;
+    text-decoration: underline;
     cursor: pointer;
-    font-size: 14px; /* 设置字体大小 */
-    text-decoration: underline; /* 添加下划线 */
 }
 
 
@@ -288,6 +249,9 @@ body {
             <div class="chatbox__messages">
                 <div></div>
             </div>
+            <div class="email__button">
+                <button class="email__button__send">Contact the Recruiter</button>
+            </div>
             <div class="chatbox__footer">
                 <input type="text" placeholder="Write a message...">
                 <button class="chatbox__send--footer send__button">Send</button>
@@ -305,8 +269,8 @@ body {
         this.args = {
             openButton: document.querySelector('.chatbox__button'),
             chatBox: document.querySelector('.chatbox__support'),
-            sendButton: document.querySelector('.send__button')
-//            emailButton: document.querySelector('.email__button')
+            sendButton: document.querySelector('.send__button'),
+            emailButton: document.querySelector('.email__button')
         }
 
         this.state = false;
@@ -317,9 +281,9 @@ body {
     display() {
         const {openButton, chatBox, sendButton, emailButton} = this.args;
 
-        openButton.addEventListener('click', () => this.toggleState(chatBox))
-        sendButton.addEventListener('click', () => this.onSendButton(chatBox))
-//        emailButton.addEventListener('click', () => this.onEmailButton())
+        openButton.addEventListener('click', () => this.toggleState(chatBox));
+        sendButton.addEventListener('click', () => this.onSendButton(chatBox));
+        emailButton.addEventListener('click', () => this.onEmailButton());
 
         const node = chatBox.querySelector('input');
         node.addEventListener("keyup", ({key}) => {
@@ -368,7 +332,7 @@ body {
 
         // if not, create a new sessionId
         if (!sessionId) {
-            sessionId = "uniqueID_" + Math.random().toString(36).substr(2, 9);  // 一个简单的随机 ID 生成方法
+            sessionId = "uniqueID_" + Math.random().toString(36).substr(2, 9);  // random ID
             localStorage.setItem("sessionId", sessionId);
         }
 
@@ -411,31 +375,57 @@ body {
         }
     }
 
-    updateChatText(chatbox) {
-        var html = '';
-        this.messages.slice().reverse().forEach(function(item, index) {
-            if (item.name === "Chatbot")
-            {
-                html += '<div class="messages__item messages__item--visitor">' + item.message + '</div>'
-            }
-            else
-            {
-                html += '<div class="messages__item messages__item--operator">' + item.message + '</div>'
-            }
-          });
+//    updateChatText(chatbox) {
+//        var html = '';
+//        this.messages.slice().reverse().forEach(function(item, index) {
+//            if (item.name === "Chatbot")
+//            {
+//                html += '<div class="messages__item messages__item--visitor">' + item.message + '</div>'
+//            }
+//            else
+//            {
+//                html += '<div class="messages__item messages__item--operator">' + item.message + '</div>'
+//            }
+//          });
+//
+//        const chatmessage = chatbox.querySelector('.chatbox__messages');
+//        chatmessage.innerHTML = html;
+//        chatmessage.scrollTop = Infinity;
+//    }
 
+    updateChatText(chatbox) {
         const chatmessage = chatbox.querySelector('.chatbox__messages');
-        chatmessage.innerHTML = html;
-        chatmessage.scrollTop = Infinity;
+
+        // 清空 chatmessage 中的所有子元素，以便更新消息
+        while (chatmessage.firstChild) {
+            chatmessage.removeChild(chatmessage.firstChild);
+        }
+
+        this.messages.slice().reverse().forEach(function(item, index) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('messages__item');
+
+            if (item.name === "Chatbot") {
+                messageElement.classList.add('messages__item--visitor');
+            } else {
+                messageElement.classList.add('messages__item--operator');
+            }
+
+            const textNode = document.createTextNode(item.message);
+            messageElement.appendChild(textNode);
+            chatmessage.appendChild(messageElement);
+        });
+
+        chatmessage.scrollTop = chatmessage.scrollHeight;
     }
 
-    onEmailButton() {
-        const chatHistory = this.messages.map(message => `${message.sender}: ${message.text}`).join('\n');
 
-        const emailSubject = 'Job Inquiry';
+    onEmailButton() {
+
+        const emailSubject = 'Job Inquiry From ChatBot';
         const emailRecipient = 'hr@example.com';
 
-        const mailtoLink = `mailto:${emailRecipient}?subject=${emailSubject}&body=Previous Chat History:%0D%0A%0D%0A${encodeURIComponent(chatHistory)}`;
+        const mailtoLink = `mailto:${emailRecipient}?subject=${emailSubject}`;
 
         // open user's mail client
         window.location.href = mailtoLink;

@@ -25,6 +25,7 @@ def create_app():
     my_app = Flask(__name__, template_folder="templates")
     my_app.secret_key = os.getenv('SECRET_KEY')
     CORS(my_app)
+    # CORS(my_app, resources={r"/predict": {"origins": "https://example.com"}})
     logging.basicConfig(filename='Log.log', level=logging.INFO)
 
     # store qa chain for each user: {session_id:ConversationalRetrievalChain}

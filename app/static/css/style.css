@@ -211,56 +211,17 @@ body {
     cursor: pointer;
 }
 
-@keyframes dotPulse {
-    0% { transform: scale(0.8); opacity: 0.5; }
-    50% { transform: scale(1); opacity: 1; }
-    100% { transform: scale(0.8); opacity: 0.5; }
-}
 
-.dotPulseWrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.dotPulse {
-    background-color: #000;
-    border-radius: 50%;
-    width: 8px;
-    height: 8px;
-    margin: 3px;
-    animation: dotPulse 1s infinite;
-}
-
-.dotPulse:nth-child(1) {
-    animation-delay: 0s;
-}
-
-.dotPulse:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.dotPulse:nth-child(3) {
-    animation-delay: 0.4s;
-}
-
-
-.email-button {
+.email__button {
     text-align: center;
-    margin-top: 20px; /* 调整按钮与聊天框的垂直距离 */
+    margin-top: 20px;
 }
 
-.email-button {
-    text-align: center;
-    margin-top: 20px; /* 调整按钮与聊天框的垂直距离 */
-}
-
-.email-button__send {
-    background: none; /* 去除背景颜色 */
-    border: none; /* 去除边框 */
+.email__button__send {
+    border: none;
+    background: none;
+    text-decoration: underline;
     cursor: pointer;
-    font-size: 14px; /* 设置字体大小 */
-    text-decoration: underline; /* 添加下划线 */
 }
 
 
