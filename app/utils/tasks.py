@@ -25,3 +25,4 @@ def delete_expired_sessions():
         del app.user_expiry[session_id]
 
     print("expired session deleted: " + str(datetime.now()))
+    print(app.user_expiry)
