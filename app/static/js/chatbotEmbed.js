@@ -2,26 +2,18 @@
         // inject CSS
         var style = document.createElement('style');
         style.type = 'text/css';
-        style.innerHTML = `* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+        style.innerHTML = `.cb_container * {
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
-body {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 400;
-    font-size: 100%;
-    background: #F1F1F1;
+.cb_container {
+    font-family: 'Montserrat', sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 100% !important;
+    background: #F1F1F1 !important;
 }
-
-/**, html {
-    --primaryGradient: linear-gradient(93.12deg, #581B98 0.52%, #9C1DE7 100%);
-    --secondaryGradient: linear-gradient(268.91deg, #581B98 -2.14%, #9C1DE7 99.69%);
-    --primaryBoxShadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
-    --secondaryBoxShadow: 0px -10px 15px rgba(0, 0, 0, 0.1);
-    --primary: #581B98;
-}*/
 
 *, html {
     --primaryGradient: linear-gradient(93.12deg, #0074E4 0.52%, #4CB8E0 100%);
@@ -31,201 +23,200 @@ body {
     --primary: #0074E4;
 }
 
-
-/* CHATBOX
-=============== */
 .chatbox {
-    position: absolute;
-    bottom: 30px;
-    right: 30px;
+    position: fixed !important;
+    bottom: 30px !important;
+    right: 30px !important;
+    z-index: 1000 !important;
 }
 
 /* CONTENT IS CLOSE */
 .chatbox__support {
-    display: flex;
-    flex-direction: column;
-    background: #eee;
-    width: 450px;
-    height: 600px;
-    z-index: -123456;
-    opacity: 0;
-    transition: all .5s ease-in-out;
+    display: flex !important;
+    flex-direction: column !important;
+    background: #eee !important;
+    width: 450px !important;
+    height: 600px !important;
+    z-index: -123456 !important;
+    opacity: 0 !important;
+    transition: all .5s ease-in-out !important;
 }
 
-/* CONTENT ISOPEN */
+/* CONTENT IS OPEN */
 .chatbox--active {
-    transform: translateY(-40px);
-    z-index: 123456;
-    opacity: 1;
+    transform: translateY(-40px) !important;
+    z-index: 123456 !important;
+    opacity: 1 !important;
 
 }
 
 /* BUTTON */
 .chatbox__button {
-    text-align: right;
+    text-align: right !important;
 }
 
 .send__button {
-    padding: 6px;
-    background: transparent;
-    border: none;
-    outline: none;
-    cursor: pointer;
+    padding: 6px !important;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    cursor: pointer !important;
 }
-
 
 /* HEADER */
 .chatbox__header {
-    position: sticky;
-    top: 0;
+    position: sticky !important;
+    top: 0 !important;
 }
 
 /* MESSAGES */
 .chatbox__messages {
-    margin-top: auto;
-    display: flex;
-    overflow-y: scroll;
-    flex-direction: column-reverse;
+    margin-top: auto !important;
+    display: flex !important;
+    overflow-y: scroll !important;
+    flex-direction: column-reverse !important;
 }
 
 .messages__item {
-    background: orange;
-    max-width: 80%;
-    width: fit-content;
+    background: orange !important;
+    max-width: 80% !important;
+    width: fit-content !important;
 }
 
 .messages__item--operator {
-    margin-left: auto;
+    margin-left: auto !important;
 }
 
 .messages__item--visitor {
-    margin-right: auto;
+    margin-right: auto !important;
 }
 
 /* FOOTER */
 .chatbox__footer {
-    position: sticky;
-    bottom: 0;
+    position: sticky !important;
+    bottom: 0 !important;
 }
 
 .chatbox__support {
-    background: white;
-    height: 700px;
-    width: 450px;
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
+    background: white !important;
+    height: 700px !important;
+    width: 450px !important;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1) !important;
+    border-top-left-radius: 20px !important;
+    border-top-right-radius: 20px !important;
+    border-bottom-left-radius: 10px !important;
+    border-bottom-right-radius: 10px !important;
 }
 
 /* HEADER */
 .chatbox__header {
-     background: var(--primaryGradient);
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 15px 20px;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-    box-shadow: var(--primaryBoxShadow);
+     background: var(--primaryGradient) !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 15px 20px !important;
+    border-top-left-radius: 20px !important;
+    border-top-right-radius: 20px !important;
+    box-shadow: var(--primaryBoxShadow) !important;
 }
 
 .chatbox__image--header {
-    margin-right: 10px;
+    margin-right: 10px !important;
 }
 
 .chatbox__heading--header {
-    font-size: 1.2rem;
-    color: white;
+    font-size: 1.2rem !important;
+    color: white !important;
 }
 
 .chatbox__description--header {
-    font-size: .9rem;
-    color: white;
+    font-size: .9rem !important;
+    color: white !important;
 }
 
 /* Messages */
 .chatbox__messages {
-    padding: 0 20px;
+    padding: 0 20px !important;
 }
 
 .messages__item {
-    font-size: 13px;
-    white-space: pre-wrap;
-    margin-top: 10px;
-    background: #F4F6F8;
-    padding: 8px 12px;
-    max-width: 70%;
-    line-height: 1.5;
+    font-size: 13px !important;
+    white-space: pre-wrap !important;
+    margin-top: 10px !important;
+    background: #F4F6F8 !important;
+    padding: 8px 12px !important;
+    max-width: 70% !important;
+    line-height: 1.5 !important;
 }
 
 .messages__item--visitor,
 .messages__item--typing {
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-    border-bottom-right-radius: 20px;
+    border-top-left-radius: 20px !important;
+    border-top-right-radius: 20px !important;
+    border-bottom-right-radius: 20px !important;
 }
 
 .messages__item--operator {
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-    border-bottom-left-radius: 20px;
-    background: var(--primary);
-    color: white;
-    word-wrap: break-word;
+    border-top-left-radius: 20px !important;
+    border-top-right-radius: 20px !important;
+    border-bottom-left-radius: 20px !important;
+    background: var(--primary) !important;
+    color: white !important;
+    word-wrap: break-word !important;
 }
 
 /* FOOTER */
 .chatbox__footer {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px 20px;
-    background: var(--secondaryGradient);
-    box-shadow: var(--secondaryBoxShadow);
-    border-bottom-right-radius: 10px;
-    border-bottom-left-radius: 10px;
-    margin-top: 20px;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 20px 20px !important;
+    background: var(--secondaryGradient) !important;
+    box-shadow: var(--secondaryBoxShadow) !important;
+    border-bottom-right-radius: 10px !important;
+    border-bottom-left-radius: 10px !important;
+    margin-top: 20px !important;
 }
 
 .chatbox__footer input {
-    width: 80%;
-    border: none;
-    padding: 10px 10px;
-    border-radius: 30px;
-    text-align: left;
+    width: 80% !important;
+    border: none !important;
+    padding: 10px 10px !important;
+    border-radius: 30px !important;
+    text-align: left !important;
 }
 
 .chatbox__send--footer {
-    color: white;
+    color: white !important;
 }
 
 .chatbox__button button,
 .chatbox__button button:focus,
 .chatbox__button button:visited {
-    padding: 10px;
-    background: white;
-    border: none;
-    outline: none;
-    border-top-left-radius: 50px;
-    border-top-right-radius: 50px;
-    border-bottom-left-radius: 50px;
-    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
+    padding: 10px !important;
+    background: white !important;
+    border: none !important;
+    outline: none !important;
+    border-top-left-radius: 50px !important;
+    border-top-right-radius: 50px !important;
+    border-bottom-left-radius: 50px !important;
+    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1) !important;
+    cursor: pointer !important;
 }
 
-
 .email__button {
-    text-align: center;
-    margin-top: 20px;
+    text-align: center !important;
+    margin-top: 20px !important;
 }
 
 .email__button__send {
-    border: none;
-    background: none;
-    text-decoration: underline;
-    cursor: pointer;
+    border: none !important;
+    background: none !important;
+    text-decoration: underline !important;
+    cursor: pointer !important;
+    font-size: .9rem !important;
 }
 
 
@@ -234,7 +225,7 @@ body {
 
         // inject HTML
         document.body.innerHTML += `<!-- a div contains the chatbot -->
-<div class="container">
+<div class="cb_container">
     <div class="chatbox">
         <div class="chatbox__support">
             <div class="chatbox__header">
@@ -265,6 +256,10 @@ body {
 
         // inject JS
         class Chatbox {
+
+    static BASE_URL = 'http://127.0.0.1:5000';
+    static emailRecipient = 'xxxxxx@xxx.com';
+
     constructor() {
         this.args = {
             openButton: document.querySelector('.chatbox__button'),
@@ -273,8 +268,13 @@ body {
             emailButton: document.querySelector('.email__button')
         }
 
+        //toggle the chatbot
         this.state = false;
+
+        //store messages history
         this.messages = [];
+
+        //add initial message
         this.initialMessageDisplayed = false;
     }
 
@@ -300,7 +300,11 @@ body {
     }
 
     displayInitialMessage(chatbox) {
-        const initialMsg = "Hello! I'm your Job Matching Assistant. I can help you find the perfect job opportunity from our job data. Just let me know what you're looking for, such as 'Registered nurse positions in Boston.' If you have questions about specific companies or the application process, feel free to contact our recruiter Jackson at xxx@xenonhealth.com.";
+        const initialMsg = "Hello! I'm your Job Matching Assistant. I can help you find the perfect job opportunity " +
+        "from our job data. Just let me know what you're looking for, such as 'registered nurse positions in New York'. " +
+        "If you have questions about specific jobs or the application process, feel free to contact our recruiter at " +
+        "xxxxxx@xxx.com";
+
         let initialMessage = { name: "Chatbot", message: initialMsg };
         this.messages.push(initialMessage);
         this.updateChatText(chatbox);
@@ -317,6 +321,7 @@ body {
         }
     }
 
+    //show the message and send it
     async onSendButton(chatbox) {
         var textField = chatbox.querySelector('input');
         let text1 = textField.value
@@ -349,7 +354,7 @@ body {
         textField.value = '';
 
         try {
-            const response = await fetch('http://127.0.0.1:5000/predict', {
+            const response = await fetch(`${Chatbox.BASE_URL}/predict`, {
                 method: 'POST',
                 body: JSON.stringify({ message: text1, sessionId: sessionId }),
                 mode: 'cors',
@@ -375,28 +380,9 @@ body {
         }
     }
 
-//    updateChatText(chatbox) {
-//        var html = '';
-//        this.messages.slice().reverse().forEach(function(item, index) {
-//            if (item.name === "Chatbot")
-//            {
-//                html += '<div class="messages__item messages__item--visitor">' + item.message + '</div>'
-//            }
-//            else
-//            {
-//                html += '<div class="messages__item messages__item--operator">' + item.message + '</div>'
-//            }
-//          });
-//
-//        const chatmessage = chatbox.querySelector('.chatbox__messages');
-//        chatmessage.innerHTML = html;
-//        chatmessage.scrollTop = Infinity;
-//    }
-
     updateChatText(chatbox) {
         const chatmessage = chatbox.querySelector('.chatbox__messages');
 
-        // 清空 chatmessage 中的所有子元素，以便更新消息
         while (chatmessage.firstChild) {
             chatmessage.removeChild(chatmessage.firstChild);
         }
@@ -423,9 +409,8 @@ body {
     onEmailButton() {
 
         const emailSubject = 'Job Inquiry From ChatBot';
-        const emailRecipient = 'hr@example.com';
 
-        const mailtoLink = `mailto:${emailRecipient}?subject=${emailSubject}`;
+        const mailtoLink = `mailto:${Chatbox.emailRecipient}?subject=${emailSubject}`;
 
         // open user's mail client
         window.location.href = mailtoLink;

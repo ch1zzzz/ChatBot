@@ -1,4 +1,8 @@
 class Chatbox {
+
+    static BASE_URL = 'http://127.0.0.1:5000';
+    static emailRecipient = 'xxxxxx@xxx.com';
+
     constructor() {
         this.args = {
             openButton: document.querySelector('.chatbox__button'),
@@ -7,8 +11,13 @@ class Chatbox {
             emailButton: document.querySelector('.email__button')
         }
 
+        //toggle the chatbot
         this.state = false;
+
+        //store messages history
         this.messages = [];
+
+        //add initial message
         this.initialMessageDisplayed = false;
     }
 
@@ -34,7 +43,11 @@ class Chatbox {
     }
 
     displayInitialMessage(chatbox) {
-        const initialMsg = "Hello! I'm your Job Matching Assistant. I can help you find the perfect job opportunity from our job data. Just let me know what you're looking for, such as 'Registered nurse positions in Boston.' If you have questions about specific companies or the application process, feel free to contact our recruiter Jackson at xxx@xenonhealth.com.";
+        const initialMsg = "Hello! I'm your Job Matching Assistant. I can help you find the perfect job opportunity " +
+        "from our job data. Just let me know what you're looking for, such as 'registered nurse positions in New York'. " +
+        "If you have questions about specific jobs or the application process, feel free to contact our recruiter at " +
+        "xxxxxx@xxx.com";
+
         let initialMessage = { name: "Chatbot", message: initialMsg };
         this.messages.push(initialMessage);
         this.updateChatText(chatbox);
@@ -51,6 +64,7 @@ class Chatbox {
         }
     }
 
+    //show the message and send it
     async onSendButton(chatbox) {
         var textField = chatbox.querySelector('input');
         let text1 = textField.value
@@ -83,7 +97,7 @@ class Chatbox {
         textField.value = '';
 
         try {
-            const response = await fetch('http://127.0.0.1:5000/predict', {
+            const response = await fetch(`${Chatbox.BASE_URL}/predict`, {
                 method: 'POST',
                 body: JSON.stringify({ message: text1, sessionId: sessionId }),
                 mode: 'cors',
@@ -109,28 +123,9 @@ class Chatbox {
         }
     }
 
-//    updateChatText(chatbox) {
-//        var html = '';
-//        this.messages.slice().reverse().forEach(function(item, index) {
-//            if (item.name === "Chatbot")
-//            {
-//                html += '<div class="messages__item messages__item--visitor">' + item.message + '</div>'
-//            }
-//            else
-//            {
-//                html += '<div class="messages__item messages__item--operator">' + item.message + '</div>'
-//            }
-//          });
-//
-//        const chatmessage = chatbox.querySelector('.chatbox__messages');
-//        chatmessage.innerHTML = html;
-//        chatmessage.scrollTop = Infinity;
-//    }
-
     updateChatText(chatbox) {
         const chatmessage = chatbox.querySelector('.chatbox__messages');
 
-        // 清空 chatmessage 中的所有子元素，以便更新消息
         while (chatmessage.firstChild) {
             chatmessage.removeChild(chatmessage.firstChild);
         }
@@ -157,9 +152,8 @@ class Chatbox {
     onEmailButton() {
 
         const emailSubject = 'Job Inquiry From ChatBot';
-        const emailRecipient = 'hr@example.com';
 
-        const mailtoLink = `mailto:${emailRecipient}?subject=${emailSubject}`;
+        const mailtoLink = `mailto:${Chatbox.emailRecipient}?subject=${emailSubject}`;
 
         // open user's mail client
         window.location.href = mailtoLink;

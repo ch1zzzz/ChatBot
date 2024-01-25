@@ -67,7 +67,7 @@ def upload_file():
 
 
 @app.route('/predict', methods=['POST'])
-@require_valid_referer
+# @require_valid_referer
 def predict():
     text = request.get_json().get("message")
     session_id = request.get_json().get("sessionId")
